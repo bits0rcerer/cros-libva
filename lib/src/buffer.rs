@@ -251,6 +251,11 @@ impl Buffer {
                     std::mem::size_of_val(wrapper.inner_mut()),
                 ),
             },
+
+            BufferType::ProcPipelineParameter(ref mut wrapper) => (
+                wrapper.as_mut() as *mut _ as *mut std::ffi::c_void,
+                std::mem::size_of_val(wrapper.as_mut()),
+            ),
         };
 
         // Safe because `self` represents a valid `VAContext`. `ptr` and `size` are also ensured to
@@ -319,6 +324,8 @@ pub enum BufferType {
     EncCodedBuffer(usize),
     /// Abstraction over `VAEncMiscParameterBuffer`.
     EncMiscParameter(EncMiscParameter),
+    /// Absraction over `VAProcPipelineParameterBuffer`
+    ProcPipelineParameter(Box<bindings::VAProcPipelineParameterBuffer>),
 }
 
 impl BufferType {
@@ -350,6 +357,9 @@ impl BufferType {
             BufferType::EncCodedBuffer(_) => bindings::VABufferType::VAEncCodedBufferType,
 
             BufferType::EncMiscParameter(_) => bindings::VABufferType::VAEncMiscParameterBufferType,
+            BufferType::ProcPipelineParameter(_) => {
+                bindings::VABufferType::VAProcPipelineParameterBufferType
+            }
         }
     }
 }
