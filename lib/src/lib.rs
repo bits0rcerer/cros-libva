@@ -63,7 +63,7 @@ impl std::error::Error for VaError {}
 ///
 /// This can be used on the return value of any VA function returning `VAStatus` in order to
 /// convert it to a proper Rust `Result`.
-fn va_check(code: VAStatus) -> Result<(), VaError> {
+pub fn va_check(code: VAStatus) -> Result<(), VaError> {
     match code as u32 {
         bindings::VA_STATUS_SUCCESS => Ok(()),
         _ => Err(VaError(unsafe { NonZeroI32::new_unchecked(code) })),
