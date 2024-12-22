@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 use log::error;
 
@@ -19,7 +19,7 @@ use crate::VaError;
 
 /// A VA context for a particular [`Display`].
 pub struct Context {
-    display: Rc<Display>,
+    display: Arc<Display>,
     id: bindings::VAContextID,
 }
 
@@ -27,13 +27,13 @@ impl Context {
     /// Creates a Context by wrapping around a `vaCreateContext` call. This is just a helper for
     /// [`Display::create_context`].
     pub(crate) fn new<D: SurfaceMemoryDescriptor>(
-        display: Rc<Display>,
+        display: Arc<Display>,
         config: &Config,
         coded_width: u32,
         coded_height: u32,
         surfaces: Option<&Vec<Surface<D>>>,
         progressive: bool,
-    ) -> Result<Rc<Self>, VaError> {
+    ) -> Result<Arc<Self>, VaError> {
         let mut context_id = 0;
         let flags = if progressive {
             bindings::VA_PROGRESSIVE as i32
@@ -62,14 +62,14 @@ impl Context {
             )
         })?;
 
-        Ok(Rc::new(Self {
+        Ok(Arc::new(Self {
             display,
             id: context_id,
         }))
     }
 
     /// Returns a shared reference to the [`Display`] used by this context.
-    pub fn display(&self) -> &Rc<Display> {
+    pub fn display(&self) -> &Arc<Display> {
         &self.display
     }
 
@@ -79,13 +79,13 @@ impl Context {
     }
 
     /// Create a new buffer of type `type_`.
-    pub fn create_buffer(self: &Rc<Self>, type_: BufferType) -> Result<Buffer, VaError> {
-        Buffer::new(Rc::clone(self), type_)
+    pub fn create_buffer(self: &Arc<Self>, type_: BufferType) -> Result<Buffer, VaError> {
+        Buffer::new(Arc::clone(self), type_)
     }
 
     /// Create a new buffer of type `type_`.
-    pub fn create_enc_coded(self: &Rc<Self>, size: usize) -> Result<EncCodedBuffer, VaError> {
-        EncCodedBuffer::new(Rc::clone(self), size)
+    pub fn create_enc_coded(self: &Arc<Self>, size: usize) -> Result<EncCodedBuffer, VaError> {
+        EncCodedBuffer::new(Arc::clone(self), size)
     }
 }
 

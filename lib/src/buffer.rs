@@ -20,7 +20,7 @@ pub use mpeg2::*;
 pub use vp8::*;
 pub use vp9::*;
 
-use std::rc::Rc;
+use std::sync::Arc;
 
 use log::error;
 
@@ -31,14 +31,14 @@ use crate::VaError;
 
 /// Wrapper type representing a buffer created with `vaCreateBuffer`.
 pub struct Buffer {
-    context: Rc<Context>,
+    context: Arc<Context>,
     id: bindings::VABufferID,
 }
 
 impl Buffer {
     /// Creates a new buffer by wrapping a `vaCreateBuffer` call. This is just a helper for
     /// [`Context::create_buffer`].
-    pub(crate) fn new(context: Rc<Context>, mut type_: BufferType) -> Result<Self, VaError> {
+    pub(crate) fn new(context: Arc<Context>, mut type_: BufferType) -> Result<Self, VaError> {
         let mut buffer_id = 0;
 
         /* we send all slices parameters as a single array in H264, AV1 */
@@ -462,7 +462,7 @@ pub enum EncMacroblockParameterBuffer {
 pub struct EncCodedBuffer(Buffer);
 
 impl EncCodedBuffer {
-    pub(crate) fn new(context: Rc<Context>, size: usize) -> Result<Self, VaError> {
+    pub(crate) fn new(context: Arc<Context>, size: usize) -> Result<Self, VaError> {
         Ok(Self(Buffer::new(
             context,
             BufferType::EncCodedBuffer(size),
