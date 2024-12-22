@@ -15,4 +15,6 @@ pub fn vaapi_gen_builder(builder: bindgen::Builder) -> bindgen::Builder {
         .allowlist_var("VA.*")
         .allowlist_function("va.*")
         .allowlist_type(ALLOW_LIST_TYPE)
+        .generate_comments(true)
+        .clang_arg("-fparse-all-comments")
 }
