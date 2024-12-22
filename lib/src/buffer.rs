@@ -530,7 +530,7 @@ impl<'p> MappedCodedBuffer<'p> {
     }
 }
 
-impl<'p> Drop for MappedCodedBuffer<'p> {
+impl Drop for MappedCodedBuffer<'_> {
     fn drop(&mut self) {
         let status = va_check(unsafe {
             bindings::vaUnmapBuffer(self.buffer.0.context.display().handle(), self.buffer.id())

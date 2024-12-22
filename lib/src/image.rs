@@ -188,20 +188,20 @@ impl<'a> Image<'a> {
     }
 }
 
-impl<'a> AsRef<[u8]> for Image<'a> {
+impl AsRef<[u8]> for Image<'_> {
     fn as_ref(&self) -> &[u8] {
         self.data
     }
 }
 
-impl<'a> AsMut<[u8]> for Image<'a> {
+impl AsMut<[u8]> for Image<'_> {
     fn as_mut(&mut self) -> &mut [u8] {
         self.dirty = true;
         self.data
     }
 }
 
-impl<'a> Drop for Image<'a> {
+impl Drop for Image<'_> {
     fn drop(&mut self) {
         if !self.derived && self.dirty {
             // Safe because `picture.inner.context` represents a valid `VAContext`,
